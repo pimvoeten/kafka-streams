@@ -14,7 +14,7 @@ public class BillOfLadingStream extends AbstractStream {
     public Topology topology() {
         var builder = new StreamsBuilder();
 
-        builder.stream("bill-of-lading", Consumed.with(Serdes.String(), CustomSerdes.Json(BillOfLading.class)));
+        builder.stream("bills-of-lading", Consumed.with(Serdes.String(), CustomSerdes.Json(BillOfLading.class)));
 
         return builder.build();
     }

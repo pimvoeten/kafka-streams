@@ -7,22 +7,21 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.5.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>io.pimvoeten.kafka-streams</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>kafka-streams</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>kafka-streams-parent</name>
 
     <properties>
         <java.version>11</java.version>
+        <start-class>com.pvoeten.kafkastreams.KafkaStreamsApplication</start-class>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -77,6 +76,7 @@
     </dependencies>
 
     <build>
+        <finalName>kafka-streams</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -13,21 +13,24 @@ import java.util.Collections;
 
 @Component
 public class VesselVisitStream extends AbstractStream {
+
+    public static final String VESSEL_VISITS_STORE = "vessel-visits-store";
+
     @Override
     public Topology topology() {
         var builder = new StreamsBuilder();
 
         builder.addStateStore(
             Stores.keyValueStoreBuilder(
-                    Stores.persistentKeyValueStore("vessel-visits"),
+                    Stores.persistentKeyValueStore(VESSEL_VISITS_STORE),
                     Serdes.String(),
                     CustomSerdes.Json(VesselVisit.class)
                 )
                 .withLoggingEnabled(Collections.emptyMap())
         );
 
-        builder.stream("vessel-visit", Consumed.with(Serdes.String(), CustomSerdes.Json(VesselVisit.class)))
-            .process(VesselVisitStateStoreProcessor::new, "vessel-visits");
+        builder.stream("vessel-visits", Consumed.with(Serdes.String(), CustomSerdes.Json(VesselVisit.class)))
+            .process(VesselVisitStateStoreProcessor::new, VESSEL_VISITS_STORE);
 
         return builder.build();
     }

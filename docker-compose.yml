@@ -5,6 +5,57 @@ networks:
   kafka-streams:
 
 services:
+  streams_app_1:
+    image: kafka-streams:latest
+    networks:
+      kafka-streams:
+    ports:
+      - 9001:9001
+    depends_on:
+      - kafka_1
+      - kafka_2
+      - kafka_3
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 9001
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - ./.storage/app_1:/kafka-streams
+
+  streams_app_2:
+    image: kafka-streams:latest
+    networks:
+      kafka-streams:
+    ports:
+      - 9002:9002
+    depends_on:
+      - kafka_1
+      - kafka_2
+      - kafka_3
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 9002
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - ./.storage/app_2:/kafka-streams
+
+  streams_app_3:
+    image: kafka-streams:latest
+    networks:
+      kafka-streams:
+    ports:
+      - 9003:9003
+    depends_on:
+      - kafka_1
+      - kafka_2
+      - kafka_3
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 9003
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - ./.storage/app_3:/kafka-streams
+
   zookeeper:
     image: confluentinc/cp-zookeeper:6.0.0
     hostname: zookeeper
@@ -22,7 +73,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "29091:29092"
+      - "29091:29091"
+      - "9091:9091"
     networks:
       - kafka-streams
     environment:
@@ -30,13 +82,14 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_1:9091,PLAINTEXT_HOST://localhost:29091
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+    #      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     working_dir: /data
     volumes:
-    - ./.storage/kafka_1:/data
+      - ./.storage/kafka_1:/data
 
   kafka_2:
     image: confluentinc/cp-enterprise-kafka:6.0.0
@@ -45,6 +98,7 @@ services:
       - zookeeper
     ports:
       - "29092:29092"
+      - "9092:9092"
     networks:
       - kafka-streams
     environment:
@@ -52,13 +106,14 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_2:9092,PLAINTEXT_HOST://localhost:29092
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+    #      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     working_dir: /data
     volumes:
-    - ./.storage/kafka_2:/data
+      - ./.storage/kafka_2:/data
 
   kafka_3:
     image: confluentinc/cp-enterprise-kafka:6.0.0
@@ -66,7 +121,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "29093:29092"
+      - "29093:29093"
+      - "9093:9093"
     networks:
       - kafka-streams
     environment:
@@ -74,25 +130,26 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_3:9093,PLAINTEXT_HOST://localhost:29093
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+    #      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     working_dir: /data
     volumes:
-    - ./.storage/kafka_3:/data
+      - ./.storage/kafka_3:/data
 
-#  kafka-create-topics:
-#    image: confluentinc/cp-enterprise-kafka:6.0.0
-#    hostname: kafka-create-topics
-#    networks:
-#      - kafka-streams
-#    depends_on:
-#      - kafka
-#    command: ["bash", "./create-topics.sh"]
-#    working_dir: /scripts
-#    volumes:
-#    - ./docker/topics:/scripts
+  #  kafka-create-topics:
+  #    image: confluentinc/cp-enterprise-kafka:6.0.0
+  #    hostname: kafka-create-topics
+  #    networks:
+  #      - kafka-streams
+  #    depends_on:
+  #      - kafka
+  #    command: ["bash", "./create-topics.sh"]
+  #    working_dir: /scripts
+  #    volumes:
+  #    - ./docker/topics:/scripts
 
   akhq:
     image: tchiotludo/akhq

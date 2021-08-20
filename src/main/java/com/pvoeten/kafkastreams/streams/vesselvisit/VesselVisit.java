@@ -7,12 +7,12 @@ import lombok.Value;
 
 import java.time.Instant;
 
-@TopicInfo("vessel-visit")
+@TopicInfo("vessel-visits")
 @Value
 @Builder(toBuilder = true)
 public class VesselVisit {
     @AggregateId
-    private String id;
-    private Instant updated;
-    private String vesselName;
+    String id;
+    Instant updated;
+    String vesselName;
 }

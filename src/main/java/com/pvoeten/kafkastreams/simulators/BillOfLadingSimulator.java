@@ -5,10 +5,11 @@ import io.github.alikelleci.easysourcing.GatewayBuilder;
 import io.github.alikelleci.easysourcing.messages.events.EventGateway;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.streams.StreamsConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "app.run-simulators", havingValue = "true")
 public class BillOfLadingSimulator implements ApplicationRunner {
 
     @Value("${kafka.bootstrap-servers}")
@@ -30,14 +32,14 @@ public class BillOfLadingSimulator implements ApplicationRunner {
     private EventGateway gateway;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         gateway = gatewayBuilder().eventGateway();
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::createBillOfLading, 10, 10, TimeUnit.SECONDS);
     }
 
     public GatewayBuilder gatewayBuilder() {
         Properties properties = new Properties();
-        properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 
         return new GatewayBuilder(properties);
     }

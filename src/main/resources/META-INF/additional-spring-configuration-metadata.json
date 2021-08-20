@@ -9,5 +9,21 @@
       "name": "kafka.allow-topic-creation",
       "type": "java.lang.String",
       "description": "Description for kafka.allow-topic-creation."
+    },
+    {
+      "name": "app.run-simulators",
+      "type": "java.lang.String",
+      "description": "Description for app.run-simulators."
+    },
+    {
+      "name": "kafka.state-dir",
+      "type": "java.lang.String",
+      "description": "Description for kafka.state-dir."
+    },
+    {
+      "name": "kafka.replication-factor",
+      "type": "java.lang.String",
+      "description": "Description for kafka.replication-factor."
     }
-  ] }
+  ]
+}

@@ -7,12 +7,12 @@ import lombok.Value;
 
 import java.time.Instant;
 
-@TopicInfo("bill-of-lading")
+@TopicInfo("bills-of-lading")
 @Value
 @Builder(toBuilder = true)
 public class BillOfLading {
     @AggregateId
-    private String id;
-    private Instant dateRegistered;
-    private String vesselVisitId;
+    String id;
+    Instant dateRegistered;
+    String vesselVisitId;
 }

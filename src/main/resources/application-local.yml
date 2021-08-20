@@ -1,3 +1,7 @@
 kafka:
-  bootstrap-servers: "localhost:29092"
+  bootstrap-servers: "localhost:29091,localhost:29092,localhost:29093"
   allow-topic-creation: true
+  state-dir: /tmp/kafka-streams
+
+app:
+  run-simulators: false
