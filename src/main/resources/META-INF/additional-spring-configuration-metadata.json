@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "kafka.bootstrap-servers",
+      "type": "java.lang.String",
+      "description": "Description for kafka.bootstrap-servers."
+    },
+    {
+      "name": "kafka.allow-topic-creation",
+      "type": "java.lang.String",
+      "description": "Description for kafka.allow-topic-creation."
+    }
+  ] }

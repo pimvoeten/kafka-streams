@@ -1,0 +1,108 @@
+---
+version: '3'
+
+networks:
+  kafka-streams:
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.0.0
+    hostname: zookeeper
+    ports:
+      - "32181:32181"
+    networks:
+      - kafka-streams
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka_1:
+    image: confluentinc/cp-enterprise-kafka:6.0.0
+    hostname: kafka_1
+    depends_on:
+      - zookeeper
+    ports:
+      - "29091:29092"
+    networks:
+      - kafka-streams
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_1:9091,PLAINTEXT_HOST://localhost:29091
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    working_dir: /data
+    volumes:
+    - ./.storage/kafka_1:/data
+
+  kafka_2:
+    image: confluentinc/cp-enterprise-kafka:6.0.0
+    hostname: kafka_2
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    networks:
+      - kafka-streams
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_2:9092,PLAINTEXT_HOST://localhost:29092
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    working_dir: /data
+    volumes:
+    - ./.storage/kafka_2:/data
+
+  kafka_3:
+    image: confluentinc/cp-enterprise-kafka:6.0.0
+    hostname: kafka_3
+    depends_on:
+      - zookeeper
+    ports:
+      - "29093:29092"
+    networks:
+      - kafka-streams
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:32181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka_3:9093,PLAINTEXT_HOST://localhost:29093
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    working_dir: /data
+    volumes:
+    - ./.storage/kafka_3:/data
+
+#  kafka-create-topics:
+#    image: confluentinc/cp-enterprise-kafka:6.0.0
+#    hostname: kafka-create-topics
+#    networks:
+#      - kafka-streams
+#    depends_on:
+#      - kafka
+#    command: ["bash", "./create-topics.sh"]
+#    working_dir: /scripts
+#    volumes:
+#    - ./docker/topics:/scripts
+
+  akhq:
+    image: tchiotludo/akhq
+    hostname: akhq
+    ports:
+      - "8080:8080"
+    networks:
+      - kafka-streams
+    depends_on:
+      - zookeeper
+      - kafka_1
+    volumes:
+      - ./docker/akhq/application.yml:/app/application.yml

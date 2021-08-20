@@ -1,0 +1,13 @@
+akhq:
+  connections:
+    mycluster:
+      properties:
+        bootstrap.servers: "kafka_1:9091"
+      ui-options:
+        topic:
+          default-view: HIDE_INTERNAL  # default list view (ALL, HIDE_INTERNAL, HIDE_INTERNAL_STREAM, HIDE_STREAM). Overrides default
+          skip-consumer-groups: false # Skip loading consumer group information when showing topics. Overrides default
+          skip-last-record: true  # Skip loading last record date information when showing topics.  Overrides default
+        topic-data:
+          sort: NEWEST # default sort order (OLDEST, NEWEST) (default: OLDEST).  Overrides default
+
