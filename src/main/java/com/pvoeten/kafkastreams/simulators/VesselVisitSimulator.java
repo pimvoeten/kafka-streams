@@ -27,6 +27,10 @@ public class VesselVisitSimulator implements ApplicationRunner {
 
     @Value("${kafka.replication-factor}")
     private String replicationFactor;
+
+    @Value("${app.vessel-visit.id-length}")
+    private int idLength;
+
     private EventGateway gateway;
 
     @Override
@@ -44,7 +48,7 @@ public class VesselVisitSimulator implements ApplicationRunner {
 
     private void createVesselVisit() {
         VesselVisit vesselVisit = VesselVisit.builder()
-            .id(RandomStringUtils.randomAlphabetic(1))
+            .id(RandomStringUtils.randomAlphabetic(idLength))
             .vesselName(RandomStringUtils.randomAlphanumeric(20))
             .updated(Instant.now())
             .build();

@@ -6,6 +6,8 @@ spring:
 
 app:
   run-simulators: ${RUN_SIMULATORS:false}
+  vessel-visit:
+    id-length: 2
 
 server:
   port: ${SERVER_PORT:9000}
@@ -45,7 +47,7 @@ logging:
 #        boot: info
 #        context: info
 #        jmx: info
-        web: debug
+        web: info
 #          client:
 #            RestTemplate: debug
     reactor:

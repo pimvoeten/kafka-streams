@@ -4,4 +4,4 @@ kafka:
   state-dir: /tmp/kafka-streams
 
 app:
-  run-simulators: false
+  run-simulators: true

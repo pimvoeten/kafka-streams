@@ -29,6 +29,9 @@ public class BillOfLadingSimulator implements ApplicationRunner {
     @Value("${kafka.replication-factor}")
     private String replicationFactor;
 
+    @Value("${app.vessel-visit.id-length}")
+    private int idLength;
+
     private EventGateway gateway;
 
     @Override
@@ -48,7 +51,7 @@ public class BillOfLadingSimulator implements ApplicationRunner {
         BillOfLading billOfLading = BillOfLading.builder()
             .id(UUID.randomUUID().toString())
             .dateRegistered(Instant.now())
-            .vesselVisitId(RandomStringUtils.randomAlphanumeric(1))
+            .vesselVisitId(RandomStringUtils.randomAlphabetic(idLength))
             .build();
 
         gateway.publish(billOfLading);

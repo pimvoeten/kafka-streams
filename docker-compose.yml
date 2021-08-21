@@ -19,8 +19,7 @@ services:
     environment:
       SERVER_PORT: 9001
       SPRING_PROFILES_ACTIVE: docker
-    volumes:
-      - ./.storage/app_1:/kafka-streams
+      RUN_SIMULATORS: 'true'
 
   streams_app_2:
     image: kafka-streams:latest
@@ -36,8 +35,7 @@ services:
     environment:
       SERVER_PORT: 9002
       SPRING_PROFILES_ACTIVE: docker
-    volumes:
-      - ./.storage/app_2:/kafka-streams
+      RUN_SIMULATORS: 'true'
 
   streams_app_3:
     image: kafka-streams:latest
@@ -53,8 +51,39 @@ services:
     environment:
       SERVER_PORT: 9003
       SPRING_PROFILES_ACTIVE: docker
-    volumes:
-      - ./.storage/app_3:/kafka-streams
+      RUN_SIMULATORS: 'true'
+
+  streams_app_4:
+    image: kafka-streams:latest
+    networks:
+      kafka-streams:
+    ports:
+      - 9004:9004
+    depends_on:
+      - kafka_1
+      - kafka_2
+      - kafka_3
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 9004
+      SPRING_PROFILES_ACTIVE: docker
+      RUN_SIMULATORS: 'true'
+
+  streams_app_5:
+    image: kafka-streams:latest
+    networks:
+      kafka-streams:
+    ports:
+      - 9005:9005
+    depends_on:
+      - kafka_1
+      - kafka_2
+      - kafka_3
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 9005
+      SPRING_PROFILES_ACTIVE: docker
+      RUN_SIMULATORS: 'true'
 
   zookeeper:
     image: confluentinc/cp-zookeeper:6.0.0
@@ -88,8 +117,8 @@ services:
     #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     working_dir: /data
-    volumes:
-      - ./.storage/kafka_1:/data
+  #    volumes:
+  #      - kafka_1:/var/lib/kafka/data
 
   kafka_2:
     image: confluentinc/cp-enterprise-kafka:6.0.0
@@ -112,8 +141,8 @@ services:
     #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     working_dir: /data
-    volumes:
-      - ./.storage/kafka_2:/data
+  #    volumes:
+  #      - kafka_2:/var/lib/kafka/data
 
   kafka_3:
     image: confluentinc/cp-enterprise-kafka:6.0.0
@@ -136,20 +165,20 @@ services:
     #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     working_dir: /data
-    volumes:
-      - ./.storage/kafka_3:/data
-
-  #  kafka-create-topics:
-  #    image: confluentinc/cp-enterprise-kafka:6.0.0
-  #    hostname: kafka-create-topics
-  #    networks:
-  #      - kafka-streams
-  #    depends_on:
-  #      - kafka
-  #    command: ["bash", "./create-topics.sh"]
-  #    working_dir: /scripts
   #    volumes:
-  #    - ./docker/topics:/scripts
+  #      - kafka_3:/var/lib/kafka/data
+
+  kafka-create-topics:
+    image: confluentinc/cp-enterprise-kafka:6.0.0
+    hostname: kafka-create-topics
+    networks:
+      - kafka-streams
+    depends_on:
+      - kafka_1
+    command: [ "bash", "./create-topics.sh" ]
+    working_dir: /scripts
+    volumes:
+      - ./docker/topics:/scripts
 
   akhq:
     image: tchiotludo/akhq

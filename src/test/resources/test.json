@@ -1,0 +1,10 @@
+{
+  "id": "1",
+  "date-registered": 1629582688661,
+  "vessel-visit": {
+    "@class": "com.pvoeten.kafkastreams.streams.vesselvisit.VesselVisit",
+    "id": "vv",
+    "updated": 1629582688664,
+    "vesselName": "shippie"
+  }
+}

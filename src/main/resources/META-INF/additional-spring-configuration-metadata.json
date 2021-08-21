@@ -24,6 +24,11 @@
       "name": "kafka.replication-factor",
       "type": "java.lang.String",
       "description": "Description for kafka.replication-factor."
+    },
+    {
+      "name": "app.vessel-visit.id-length",
+      "type": "java.lang.String",
+      "description": "Description for app.vessel-visit.id-length."
     }
   ]
 }
