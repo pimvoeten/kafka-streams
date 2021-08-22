@@ -85,12 +85,15 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
 
                 try {
                     billsOfLadingBuffer.delete(key);
-                    context.forward(key, BillOfLadingProjection.builder()
+                    context.forward(
+                        key,
+                        BillOfLadingProjection.builder()
                             .id(key)
                             .dateRegistered(billOfLading.getDateRegistered())
                             .vesselVisit(vesselVisit)
                             .build(),
-                        To.all());
+                        To.all()
+                    );
                     context.commit();
                 } catch (NullPointerException e) {
                     log.error("vv: {} = {}", vesselVisit.getUpdated(), vesselVisit.getUpdated().toEpochMilli());
