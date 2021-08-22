@@ -24,11 +24,11 @@ and one for generating **Vessel Visits**. They will both be published to their t
 
 ### Kafka
 
-We're setting up a 3 broker Kafka cluster.
+We're setting up a 3 broker Kafka cluster. Topics are created with 30 partitions.
 
 ### Application
 
-We're also spinning up 3 instances of our kafka-streams app.
+We're also spinning up 5 instances of our kafka-streams app.
 
 ## What is does
 

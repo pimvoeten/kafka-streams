@@ -54,9 +54,10 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
                 .build());
         }
         // Vessel Visit not registered yet
-        long timestamp = context.timestamp();
-        billsOfLadingBuffer.put(key, ValueAndTimestamp.make(value, timestamp));
-        log.info("Putting BillOfLading [{}] in buffer at: {}", key, Instant.ofEpochMilli(timestamp));
+        long timestamp = context.timestamp(); // TODO: sometimes equals to 1970-01-01T00:00:00Z
+        final long epochMilli = Instant.now().toEpochMilli();
+        billsOfLadingBuffer.put(key, ValueAndTimestamp.make(value, epochMilli));
+        log.info("Putting BillOfLading [{}] in buffer at: {}", key, Instant.ofEpochMilli(epochMilli));
         return null;
     }
 
@@ -92,7 +93,8 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
                         To.all());
                     context.commit();
                 } catch (NullPointerException e) {
-                    log.error("bl: {} \n vv: {}",billOfLading, vesselVisit, e);
+                    log.error("vv: {} = {}", vesselVisit.getUpdated(), vesselVisit.getUpdated().toEpochMilli());
+                    log.error("bl: {} \n vv: {}", billOfLading, vesselVisit, e);
                 }
             });
         } finally {

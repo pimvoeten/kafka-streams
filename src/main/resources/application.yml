@@ -50,11 +50,12 @@ logging:
         web: info
 #          client:
 #            RestTemplate: debug
+    com.pvoeten: debug
+    com.pvoeten.kafkastreams.api: warn
+
     reactor:
       netty: info
       util: info
-    com:
-      pvoeten: debug
 
 kafka:
   bootstrap-servers: ""

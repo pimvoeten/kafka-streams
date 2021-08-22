@@ -64,7 +64,28 @@ public class ApiController {
 
     @GetMapping(path = "/bills-of-lading/{id}")
     public ResponseEntity<BillOfLadingProjection> getBillsOfLadingById(@PathVariable("id") String id) {
-        return ResponseEntity.noContent().build();
+        KeyQueryMetadata keyQueryMetadata = billOfLadingStream.getKafkaStream()
+            .queryMetadataForKey(billOfLadingStream.BILLS_OF_LADING_STORE, id, Serdes.String().serializer());
+        if (keyQueryMetadata == null) {
+            log.info("Bill of Lading with id [{}] does not exist", id);
+            return ResponseEntity.notFound().build();
+        }
+        log.info("Bill of Lading with id [{}] exists on partition {}", id, keyQueryMetadata.partition());
+        HostInfo activeHost = keyQueryMetadata.activeHost();
+        if (hostInfo.equals(activeHost)) {
+            log.info("Bill of Lading with id [{}] is here!!", id);
+            return ResponseEntity.ok(getBillOfLadingStore().get(id));
+        }
+        log.info("Bill of Lading with id [{}] might exist on host {}", id, activeHost);
+
+        String url = String.format("http://%s:%s/api/bills-of-lading/%s", activeHost.host(), activeHost.port(), id);
+        log.info("Retrieving Bill of Lading with id [{}] from {}", id, url);
+        BillOfLadingProjection billOfLading = restTemplate.getForObject(url,
+            BillOfLadingProjection.class);
+        if (billOfLading == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(billOfLading);
     }
 
     @GetMapping(path = "/vesselvisits/{id}")
