@@ -8,6 +8,8 @@ kafka-topics \
   --topic vessel-visits \
   --replication-factor 1 \
   --partitions 30 \
+  --config cleanup.policy=compact \
+  --config delete.retention.ms=600000 \
   --create
 
 # create the posts topic
@@ -16,6 +18,8 @@ kafka-topics \
   --topic bills-of-lading \
   --replication-factor 1 \
   --partitions 30 \
+  --config cleanup.policy=compact \
+  --config delete.retention.ms=600000 \
   --create
 
 # create the results topic
@@ -24,6 +28,8 @@ kafka-topics \
   --topic matched.results \
   --replication-factor 1 \
   --partitions 30 \
+  --config cleanup.policy=compact \
+  --config delete.retention.ms=600000 \
   --create
 
 sleep infinity

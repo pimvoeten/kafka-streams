@@ -69,7 +69,8 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
             log.warn("Buffer store is not open yet");
         }
         try (KeyValueIterator<String, ValueAndTimestamp<BillOfLading>> keyValueIterator = billsOfLadingBuffer.all()) {
-            keyValueIterator.forEachRemaining(buffered -> {
+            while (keyValueIterator.hasNext()) {
+                final KeyValue<String, ValueAndTimestamp<BillOfLading>> buffered = keyValueIterator.next();
                 String key = buffered.key;
                 ValueAndTimestamp<BillOfLading> value = buffered.value;
                 long recordTimestamp = value.timestamp();
@@ -99,7 +100,7 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
                     log.error("vv: {} = {}", vesselVisit.getUpdated(), vesselVisit.getUpdated().toEpochMilli());
                     log.error("bl: {} \n vv: {}", billOfLading, vesselVisit, e);
                 }
-            });
+            }
         } finally {
             log.info("<<<<<<<<<< {}", Instant.now());
         }

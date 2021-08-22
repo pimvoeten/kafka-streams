@@ -30,7 +30,7 @@ We're setting up a 3 broker Kafka cluster. Topics are created with 30 partitions
 
 We're also spinning up 5 instances of our kafka-streams app.
 
-## What is does
+## What does it do?
 
 Simulators publish new VesselVisits and new BillOfLadings to Kafka every x seconds. Now, the BillOfLadings all have a
 link to some VesselVisit, but we don't know when the vesselvisit will be created.
@@ -62,3 +62,10 @@ returns the complete list of Bill Of Ladings with a matched Vessel Visit.
 GET http://localhost:9002/api/vessel-visits/{id}
 
 Returns the Vessel Visit if it exists.
+
+
+# TODO
+
+- make the buffer size visible
+- faster generation in simulators
+- NPE in BillOfLadingTransformer:88-98
