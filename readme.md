@@ -67,5 +67,3 @@ Returns the Vessel Visit if it exists.
 # TODO
 
 - make the buffer size visible
-- faster generation in simulators
-- NPE in BillOfLadingTransformer:88-98

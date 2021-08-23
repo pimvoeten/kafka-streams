@@ -37,7 +37,7 @@ public class BillOfLadingSimulator implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         gateway = gatewayBuilder().eventGateway();
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::createBillOfLading, 10, 10, TimeUnit.SECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::createBillOfLading, 30, 1, TimeUnit.SECONDS);
     }
 
     public GatewayBuilder gatewayBuilder() {

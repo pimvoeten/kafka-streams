@@ -36,7 +36,7 @@ public class VesselVisitSimulator implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         gateway = gatewayBuilder().eventGateway();
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::createVesselVisit, 10, 10, TimeUnit.SECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::createVesselVisit, 30, 1, TimeUnit.SECONDS);
     }
 
     public GatewayBuilder gatewayBuilder() {

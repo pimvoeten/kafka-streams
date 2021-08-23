@@ -11,6 +11,7 @@ import org.apache.kafka.streams.state.HostInfo;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -21,6 +22,7 @@ import java.time.Instant;
 
 @Slf4j
 @Component
+@Scope("prototype") // Kafka needs a new instance everytime the
 public class BillOfLadingTransformer implements Transformer<String, BillOfLading, KeyValue<String, BillOfLadingProjection>> {
 
     private final RestTemplate restTemplate;
@@ -71,21 +73,25 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
         try (KeyValueIterator<String, ValueAndTimestamp<BillOfLading>> keyValueIterator = billsOfLadingBuffer.all()) {
             while (keyValueIterator.hasNext()) {
                 final KeyValue<String, ValueAndTimestamp<BillOfLading>> buffered = keyValueIterator.next();
+
                 String key = buffered.key;
                 ValueAndTimestamp<BillOfLading> value = buffered.value;
                 long recordTimestamp = value.timestamp();
                 BillOfLading billOfLading = value.value();
+
                 log.info(">>>>>>>>>> BL [{}] has been buffered since {}", key, Instant.ofEpochMilli(recordTimestamp));
                 VesselVisit vesselVisit = getVesselVisit(billOfLading.getVesselVisitId());
                 if (vesselVisit == null) {
                     log.info(">>>>>>>>>> BL [{}] still has no registered vessel visit [{}]", key, billOfLading.getVesselVisitId());
-                    return;
+                    continue;
                 }
                 log.info(">>>>>>>>>> Vessel visit found [{}]", vesselVisit);
                 log.info(">>>>>>>>>> BL [{}] and vessel visit [{}] can be matched", key, billOfLading.getVesselVisitId());
 
                 try {
+                    log.info("Removing BillOfLading [{}] from buffer at: {}", key, Instant.now());
                     billsOfLadingBuffer.delete(key);
+
                     context.forward(
                         key,
                         BillOfLadingProjection.builder()
