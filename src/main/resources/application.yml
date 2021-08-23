@@ -34,22 +34,8 @@ logging:
     console: UTF-8
   level:
     root: info
-#    io:
-#      micrometer: info
-#      netty: info
-    org:
-      apache:
-        kafka: warn
-#      hibernate: info
-#      jboss: info
-      springframework:
-#        beans: info
-#        boot: info
-#        context: info
-#        jmx: info
-        web: info
-#          client:
-#            RestTemplate: debug
+    org.apache.kafka: warn
+    org.springframework.web: info
     com.pvoeten: debug
     com.pvoeten.kafkastreams.api: warn
     com.pvoeten.kafkastreams.simulators: warn

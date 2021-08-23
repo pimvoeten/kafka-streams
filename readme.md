@@ -43,6 +43,18 @@ The Bills of Lading will be put in a buffer in case their corresponding Vessel V
 every X seconds and tries to match the buffered Bills of Lading with their Vessel Visits. If both are registered a new
 output object is created and stored in a KTable and topics.
 
+The simulators generate Vessel Visits with a configurable ID length. By using more characters for the ID more Bills of
+lading will need to be buffered before they can be matched. Only alphanumeric values (a-z, A-Z, 0-9 = 62 characters) are
+used for generating, which means a total combinations of:
+
+| id length | combinations |
+| --------- | ------------ |
+| 1         | 62           |
+| 2         | 3.844        |
+| 3         | 238.328      |
+| 4         | 14.776.336   |
+| 5         | 916.132.832  |
+
 ## REST API
 
 ### Metadata
@@ -63,6 +75,15 @@ GET http://localhost:9002/api/vessel-visits/{id}
 
 Returns the Vessel Visit if it exists.
 
+### Retrieve buffer sizes
+
+GET http://localhost:9002/api/bills-of-lading/buffers
+
+Returns the current buffer sizes
+
+## View logs
+
+    docker-compose logs -f streams_app_1 streams_app_2 streams_app_3 streams_app_4 streams_app_5 | grep -i -E 'ERROR|Buffer contains|Removing BillOfLading'
 
 # TODO
 
