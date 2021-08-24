@@ -1,0 +1,2 @@
+kafka:
+  bootstrap-servers: "kafka_1:9091,kafka_2:9092,kafka_3:9093"

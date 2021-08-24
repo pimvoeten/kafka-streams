@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: kafka-streams-sim
+  profiles:
+    active: local
+
+generate:
+  bill-of-lading:
+    interval: 500
+    amount: 5
+  vessel-visit:
+    id-length: 5
+    interval: 500
+    amount: 5
+
+logging:
+  charset:
+    console: UTF-8
+  level:
+    root: info
+
+kafka:
+  bootstrap-servers: ""

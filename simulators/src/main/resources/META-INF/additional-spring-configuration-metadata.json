@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "kafka.bootstrap-servers",
+      "type": "java.lang.String",
+      "description": "Description for kafka.bootstrap-servers."
+    },
+    {
+      "name": "generate.bill-of-lading.interval",
+      "type": "java.lang.String",
+      "description": "ms between the generation interval for bills of lading."
+    },
+    {
+      "name": "generate.bill-of-lading.amount",
+      "type": "java.lang.String",
+      "description": "amount of Bills of lading to generate each interval."
+    },
+    {
+      "name": "generate.vessel-visit.interval",
+      "type": "java.lang.String",
+      "description": "Description for generate.vessel-visit.interval."
+    },
+    {
+      "name": "generate.vessel-visit.amount",
+      "type": "java.lang.String",
+      "description": "amount of Vessel Visits to generate each interval."
+    },
+    {
+      "name": "generate.vessel-visit.id-length",
+      "type": "java.lang.String",
+      "description": "Length of the ID to be generated."
+    }
+  ]
+}

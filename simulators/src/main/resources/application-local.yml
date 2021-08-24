@@ -1,0 +1,2 @@
+kafka:
+  bootstrap-servers: "localhost:29091,localhost:29092,localhost:29093"

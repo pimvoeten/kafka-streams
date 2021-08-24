@@ -2,5 +2,10 @@ target/
 *.log
 .idea/
 *.iml
-
+*.class
+.settings
 .storage
+bin
+.classpath
+.factorypath
+.project
