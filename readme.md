@@ -83,7 +83,7 @@ Returns the current buffer sizes
 
 ## View logs
 
-    docker-compose logs -f streams_app_1 streams_app_2 streams_app_3 streams_app_4 streams_app_5 | grep -i -E 'ERROR|Buffer contains|Removing BillOfLading'
+    docker-compose logs -f streams-app | grep -i -E 'ERROR|Buffer contains|Removing BillOfLading'
 
 # TODO
 

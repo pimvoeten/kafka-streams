@@ -25,19 +25,20 @@ public class BillOfLadingSimulator implements ApplicationRunner {
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("$(generate.bill-of-lading.interval)")
+    @Value("${generate.bill-of-lading.interval}")
     private int interval;
 
-    @Value("$(generate.bill-of-lading.amount)")
+    @Value("${generate.bill-of-lading.amount}")
     private int amount;
 
-    @Value("${app.vessel-visit.id-length}")
+    @Value("${generate.vessel-visit.id-length}")
     private int idLength;
 
     private EventGateway gateway;
 
     @Override
     public void run(ApplicationArguments args) {
+        log.info("Starting {} with VV id length: {}, interval: {}, amount: {}", this.getClass().getSimpleName(), idLength, interval, amount);
         gateway = gatewayBuilder().eventGateway();
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::generate, 30000, interval, TimeUnit.MILLISECONDS);
     }

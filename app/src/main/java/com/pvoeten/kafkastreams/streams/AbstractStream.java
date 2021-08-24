@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
-import javax.annotation.PreDestroy;
 import java.util.Properties;
-import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
 public abstract class AbstractStream implements ApplicationRunner {
@@ -27,7 +25,6 @@ public abstract class AbstractStream implements ApplicationRunner {
 
     @Getter
     private KafkaStreams kafkaStream;
-    private ScheduledExecutorService executorService;
 
     public abstract Topology topology();
 
@@ -41,11 +38,6 @@ public abstract class AbstractStream implements ApplicationRunner {
         kafkaStream.setUncaughtExceptionHandler((thread, throwable) -> log.error("", throwable));
         kafkaStream.cleanUp();
         kafkaStream.start();
-    }
-
-    @PreDestroy
-    public void close() {
-        executorService.shutdown();
     }
 
     private String createApplicationId() {

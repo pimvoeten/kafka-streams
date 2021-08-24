@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Component
@@ -23,24 +24,22 @@ public class VesselVisitSimulator implements ApplicationRunner {
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${kafka.replication-factor}")
-    private String replicationFactor;
-
     @Value("${generate.vessel-visit.id-length}")
     private int idLength;
 
-    @Value("$(generate.vessel-visit.interval)")
+    @Value("${generate.vessel-visit.interval}")
     private int interval;
 
-    @Value("$(generate.vessel-visit.amount)")
+    @Value("${generate.vessel-visit.amount}")
     private int amount;
 
     private EventGateway gateway;
 
     @Override
     public void run(ApplicationArguments args) {
+        log.info("Starting {} with VV id length: {}, interval: {}, amount: {}", this.getClass().getSimpleName(), idLength, interval, amount);
         gateway = gatewayBuilder().eventGateway();
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::createVesselVisit, 30000, interval, TimeUnit.MILLISECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::generate, 30000, interval, TimeUnit.MILLISECONDS);
     }
 
     public GatewayBuilder gatewayBuilder() {
@@ -50,14 +49,18 @@ public class VesselVisitSimulator implements ApplicationRunner {
         return new GatewayBuilder(properties);
     }
 
-    private void createVesselVisit() {
-        VesselVisit vesselVisit = VesselVisit.builder()
-            .id(RandomStringUtils.randomAlphabetic(idLength))
-            .vesselName(RandomStringUtils.randomAlphanumeric(20))
-            .updated(Instant.now())
-            .build();
+    // TODO: publish in batches
+    private void generate() {
+        IntStream.range(0, amount)
+            .forEach(i -> {
+                    VesselVisit vesselVisit = VesselVisit.builder()
+                        .id(RandomStringUtils.randomAlphabetic(idLength))
+                        .vesselName(RandomStringUtils.randomAlphanumeric(20))
+                        .updated(Instant.now())
+                        .build();
 
-        gateway.publish(vesselVisit);
-        log.info("Simulator created new VesselVisit [{}]", vesselVisit);
+                    gateway.publish(vesselVisit);
+                }
+            );
     }
 }

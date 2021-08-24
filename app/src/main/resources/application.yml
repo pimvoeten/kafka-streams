@@ -4,30 +4,10 @@ spring:
   profiles:
     active: local
 
-app:
-  run-simulators: ${RUN_SIMULATORS:false}
-  vessel-visit:
-    id-length: 5
-
 server:
-  port: ${SERVER_PORT:9000}
+  port: ${SERVER_PORT:9001}
   servlet:
     context-path: "/api"
-
-#management:
-#  health:
-#    defaults:
-#      enabled: true
-#  endpoint:
-#    env:
-#      enabled: true
-#    info:
-#      enabled: true
-#    mappings:
-#      enabled: true
-#    health:
-#      probes:
-#        enabled: true
 
 logging:
   charset:
@@ -40,12 +20,8 @@ logging:
     com.pvoeten.kafkastreams.api: warn
     com.pvoeten.kafkastreams.simulators: warn
 
-    reactor:
-      netty: info
-      util: info
-
 kafka:
   bootstrap-servers: ""
   replication-factor: 1
   allow-topic-creation: false
-  state-dir: /kafka-streams
+  state-dir: /tmp/kafka-streams

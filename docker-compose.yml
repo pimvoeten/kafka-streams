@@ -13,87 +13,24 @@ services:
       - kafka-create-topics
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      BL_GEN_INTERVAL: 500
+      BL_GEN_AMOUNT: 1
+      VV_ID_LENGTH: 5
+      VV_GEN_INTERVAL: 1000
+      VV_GEN_AMOUNT: 1
 
-  streams_app:
+  streams-app:
     image: kafka-streams-app:latest
     networks:
       kafka-streams:
-    ports:
-      - 9001:9001
     expose:
       - 9001
     depends_on:
-      - kafka_1
-      - kafka_2
-      - kafka_3
-    restart: unless-stopped
+      - kafka-create-topics
+    restart: always
     environment:
       SERVER_PORT: 9001
       SPRING_PROFILES_ACTIVE: docker
-
-#  streams_app_2:
-#    image: kafka-streams:latest
-#    networks:
-#      kafka-streams:
-#    ports:
-#      - 9002:9002
-#    depends_on:
-#      - kafka_1
-#      - kafka_2
-#      - kafka_3
-#    restart: unless-stopped
-#    environment:
-#      SERVER_PORT: 9002
-#      SPRING_PROFILES_ACTIVE: docker
-#      RUN_SIMULATORS: 'true'
-#
-#  streams_app_3:
-#    image: kafka-streams:latest
-#    networks:
-#      kafka-streams:
-#    ports:
-#      - 9003:9003
-#    depends_on:
-#      - kafka_1
-#      - kafka_2
-#      - kafka_3
-#    restart: unless-stopped
-#    environment:
-#      SERVER_PORT: 9003
-#      SPRING_PROFILES_ACTIVE: docker
-#      RUN_SIMULATORS: 'true'
-#
-#  streams_app_4:
-#    image: kafka-streams:latest
-#    networks:
-#      kafka-streams:
-#    ports:
-#      - 9004:9004
-#    depends_on:
-#      - kafka_1
-#      - kafka_2
-#      - kafka_3
-#    restart: unless-stopped
-#    environment:
-#      SERVER_PORT: 9004
-#      SPRING_PROFILES_ACTIVE: docker
-#      RUN_SIMULATORS: 'true'
-#
-#  streams_app_5:
-#    image: kafka-streams:latest
-#    networks:
-#      kafka-streams:
-#    ports:
-#      - 9005:9005
-#    depends_on:
-#      - kafka_1
-#      - kafka_2
-#      - kafka_3
-#    restart: unless-stopped
-#    environment:
-#      SERVER_PORT: 9005
-#      SPRING_PROFILES_ACTIVE: docker
-#      RUN_SIMULATORS: 'true'
 
   zookeeper:
     image: confluentinc/cp-zookeeper:6.0.0
@@ -187,3 +124,14 @@ services:
       - kafka_1
     volumes:
       - ./docker/akhq/application.yml:/app/application.yml
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - kafka-streams
+    depends_on:
+      - streams-app
+    ports:
+      - "9000:9000"

@@ -6,12 +6,12 @@ spring:
 
 generate:
   bill-of-lading:
-    interval: 500
-    amount: 5
+    interval: ${BL_GEN_INTERVAL:500}
+    amount: ${BL_GEN_AMOUNT:5}
   vessel-visit:
-    id-length: 5
-    interval: 500
-    amount: 5
+    id-length: ${VV_ID_LENGTH:5}
+    interval: ${VV_GEN_INTERVAL:500}
+    amount: ${VV_GEN_AMOUNT:5}
 
 logging:
   charset:
