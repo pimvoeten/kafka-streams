@@ -1,7 +1,7 @@
 package com.pvoeten.kafkastreams.streams.billoflading;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.pvoeten.kafkastreams.config.SpringConfig;
+import com.pvoeten.kafkastreams.config.ObjectMapperConfig;
 import com.pvoeten.kafkastreams.vesselvisit.VesselVisit;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ import java.time.Instant;
 
 class BillOfLadingProjectionTest {
 
-    SpringConfig springConfig = new SpringConfig();
+    ObjectMapperConfig springConfig = new ObjectMapperConfig();
 
     @Test
     public void testToJson() throws JsonProcessingException {

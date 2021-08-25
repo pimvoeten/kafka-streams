@@ -5,19 +5,19 @@ networks:
   kafka-streams:
 
 services:
-  kafka-streams-simulators:
-    image: kafka-streams-simulators:latest
+  kafka-streams-generators:
+    image: kafka-streams-generators:latest
     networks:
       kafka-streams:
     depends_on:
       - kafka-create-topics
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      BL_GEN_INTERVAL: 500
-      BL_GEN_AMOUNT: 1
+      BL_GEN_INTERVAL: 100
+      BL_GEN_AMOUNT: 5
       VV_ID_LENGTH: 5
       VV_GEN_INTERVAL: 1000
-      VV_GEN_AMOUNT: 1
+      VV_GEN_AMOUNT: 5
 
   streams-app:
     image: kafka-streams-app:latest
@@ -131,7 +131,5 @@ services:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - kafka-streams
-    depends_on:
-      - streams-app
     ports:
       - "9000:9000"

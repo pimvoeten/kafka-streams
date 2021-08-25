@@ -1,12 +1,12 @@
-package com.pvoeten.kafkastreams.simulators;
+package com.pvoeten.kafkastreams;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class KafkaStreamsSimulatorsApplication {
+public class GeneratorsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(KafkaStreamsSimulatorsApplication.class, args);
+        SpringApplication.run(GeneratorsApplication.class, args);
     }
 }

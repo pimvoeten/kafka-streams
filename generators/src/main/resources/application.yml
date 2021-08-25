@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: kafka-streams-generators
+  profiles:
+    active: local
+
+generate:
+  bill-of-lading:
+    interval: ${BL_GEN_INTERVAL:1000}
+    amount: ${BL_GEN_AMOUNT:1}
+  vessel-visit:
+    id-length: ${VV_ID_LENGTH:2}
+    interval: ${VV_GEN_INTERVAL:1000}
+    amount: ${VV_GEN_AMOUNT:1}
+
+logging:
+  charset:
+    console: UTF-8
+  level:
+    root: info
+
+kafka:
+  bootstrap-servers: ""

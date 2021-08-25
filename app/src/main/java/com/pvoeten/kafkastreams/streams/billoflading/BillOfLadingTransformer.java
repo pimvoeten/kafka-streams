@@ -89,25 +89,22 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
                 log.info(">>>>>>>>>> Vessel visit found [{}]", vesselVisit);
                 log.info(">>>>>>>>>> BL [{}] and vessel visit [{}] can be matched", key, billOfLading.getVesselVisitId());
 
-                try {
-                    log.info("Removing BillOfLading [{}] from buffer at: {}", key, Instant.now());
-                    billsOfLadingBuffer.delete(key);
+                log.info("Removing BillOfLading [{}] from buffer at: {}", key, Instant.now());
+                billsOfLadingBuffer.delete(key);
 
-                    context.forward(
-                        key,
-                        BillOfLadingProjection.builder()
-                            .id(key)
-                            .dateRegistered(billOfLading.getDateRegistered())
-                            .vesselVisit(vesselVisit)
-                            .build(),
-                        To.all()
-                    );
-                    context.commit();
-                } catch (NullPointerException e) {
-                    log.error("vv: {} = {}", vesselVisit.getUpdated(), vesselVisit.getUpdated().toEpochMilli());
-                    log.error("bl: {} \n vv: {}", billOfLading, vesselVisit, e);
-                }
+                context.forward(
+                    key,
+                    BillOfLadingProjection.builder()
+                        .id(key)
+                        .dateRegistered(billOfLading.getDateRegistered())
+                        .vesselVisit(vesselVisit)
+                        .build(),
+                    To.all()
+                );
+                context.commit();
             }
+        } catch (Exception e) {
+            log.error("", e);
         } finally {
             log.info("<<<<<<<<<< {}", Instant.now());
         }
