@@ -13,7 +13,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <start-class>com.pvoeten.kafkastreams.generators.GeneratorsApplication</start-class>
+        <start-class>com.pvoeten.kafkastreams.GeneratorsApplication</start-class>
     </properties>
 
     <dependencies>

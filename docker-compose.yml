@@ -13,10 +13,10 @@ services:
       - kafka-create-topics
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      BL_GEN_INTERVAL: 100
+      BL_GEN_INTERVAL: 500
       BL_GEN_AMOUNT: 5
       VV_ID_LENGTH: 5
-      VV_GEN_INTERVAL: 1000
+      VV_GEN_INTERVAL: 500
       VV_GEN_AMOUNT: 5
 
   streams-app:

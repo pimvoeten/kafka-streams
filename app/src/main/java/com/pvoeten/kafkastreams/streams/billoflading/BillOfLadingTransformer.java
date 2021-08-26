@@ -65,7 +65,7 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
     }
 
     private void punctuate(long punctuationTimestamp) {
-        log.info(">>>>>>>>>> {}", Instant.ofEpochMilli(punctuationTimestamp));
+        log.info(">>>>>>>>>> Start punctuation at: {}", Instant.ofEpochMilli(punctuationTimestamp));
         log.info(">>>>>>>>>> BL buffer contains: {}", billsOfLadingBuffer.approximateNumEntries());
 
         if (!billsOfLadingBuffer.isOpen()) {
@@ -106,7 +106,7 @@ public class BillOfLadingTransformer implements Transformer<String, BillOfLading
         } catch (Exception e) {
             log.error("", e);
         } finally {
-            log.info("<<<<<<<<<< {}", Instant.now());
+            log.info("<<<<<<<<<< End of punctuation at: {}", Instant.now());
         }
     }
 
