@@ -16,6 +16,7 @@ logging:
     root: info
     org.apache.kafka: warn
     org.springframework.web: info
+    org.springframework.web.client.RestTemplate: debug
     com.pvoeten: debug
     com.pvoeten.kafkastreams.api: warn
     com.pvoeten.kafkastreams.simulators: warn

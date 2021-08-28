@@ -16,6 +16,9 @@
 ###
 FROM openjdk:11 as RUNTIME
 #COPY --from=BUILDER /build/target/kafka-streams.jar /app.jar
-EXPOSE 9001
+EXPOSE 9001 9010
+
 COPY target/kafka-streams.jar /app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+WORKDIR /
+#ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]

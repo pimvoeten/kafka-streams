@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: '3.8'
 
 networks:
   kafka-streams:
@@ -25,12 +25,28 @@ services:
       kafka-streams:
     expose:
       - 9001
+      - 9010
+    ports:
+      - 9010
     depends_on:
       - kafka-create-topics
     restart: always
     environment:
       SERVER_PORT: 9001
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_OPTS: "-XX:+UseContainerSupport \
+      -XX:+UseStringDeduplication \
+      -XX:+UnlockExperimentalVMOptions \
+      -XX:+UseZGC \
+      -XX:MinRAMPercentage=25 \
+      -XX:MaxRAMPercentage=75 \
+      -Dcom.sun.management.jmxremote=true \
+      -Dcom.sun.management.jmxremote.ssl=false \
+      -Dcom.sun.management.jmxremote.authenticate=false \
+      -Dcom.sun.management.jmxremote.local.only=false \
+      -Dcom.sun.management.jmxremote.port=9010 \
+      -Dcom.sun.management.jmxremote.rmi.port=9010 \
+      -Djava.rmi.server.hostname=127.0.0.1"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:6.0.0
@@ -115,6 +131,7 @@ services:
   akhq:
     image: tchiotludo/akhq
     hostname: akhq
+    restart: always
     ports:
       - "8080:8080"
     networks:
@@ -133,3 +150,5 @@ services:
       - kafka-streams
     ports:
       - "9000:9000"
+    depends_on:
+      - streams-app
