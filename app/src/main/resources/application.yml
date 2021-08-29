@@ -16,12 +16,12 @@ logging:
     root: info
     org.apache.kafka: warn
     org.springframework.web: info
+    org.springframework.web.client.RestTemplate: debug
     com.pvoeten: debug
-    com.pvoeten.kafkastreams.api: warn
-    com.pvoeten.kafkastreams.simulators: warn
+    com.pvoeten.kafkastreams.api: info
 
 kafka:
   bootstrap-servers: ""
   replication-factor: 1
   allow-topic-creation: false
-  state-dir: /tmp/kafka-streams
+  state-dir: ${KAFKA_STATE_DIR:/tmp/kafka-streams}

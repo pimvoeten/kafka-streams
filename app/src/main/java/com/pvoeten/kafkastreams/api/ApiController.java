@@ -1,5 +1,6 @@
 package com.pvoeten.kafkastreams.api;
 
+import com.pvoeten.kafkastreams.service.VesselVisitService;
 import com.pvoeten.kafkastreams.streams.billoflading.BillOfLadingProjection;
 import com.pvoeten.kafkastreams.streams.billoflading.BillOfLadingStream;
 import com.pvoeten.kafkastreams.streams.vesselvisit.VesselVisitStream;
@@ -8,10 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyQueryMetadata;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.state.HostInfo;
-import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.apache.kafka.streams.state.StreamsMetadata;
@@ -21,13 +20,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,23 +57,15 @@ public class ApiController {
         return streamsMetadata.stream().map(StreamsMetadata::toString).collect(Collectors.toList());
     }
 
-    @GetMapping(path = "/bills-of-lading")
-    public List<BillOfLadingProjection> getBillsOfLading() {
-        // TODO: this will only return the local storage contents
-        log.info("Bills of Lading count: {}", getBillOfLadingStore().approximateNumEntries());
-        List<BillOfLadingProjection> response = new ArrayList<>();
-        final KeyValueIterator<String, BillOfLadingProjection> iterator = getBillOfLadingStore().all();
-        while (iterator.hasNext()) {
-            final KeyValue<String, BillOfLadingProjection> bl = iterator.next();
-            response.add(bl.value);
-        }
-        return response;
-    }
-
     @GetMapping(path = "/bills-of-lading/{id}")
-    public ResponseEntity<BillOfLadingProjection> getBillsOfLadingById(@PathVariable("id") String id) {
-        KeyQueryMetadata keyQueryMetadata = billOfLadingStream.getKafkaStream()
-            .queryMetadataForKey(billOfLadingStream.BILLS_OF_LADING_STORE, id, Serdes.String().serializer());
+    public ResponseEntity<BillOfLadingProjection> getBillOfLadingById(@PathVariable("id") String id) {
+        final KafkaStreams kafkaStream = billOfLadingStream.getKafkaStream();
+        if (kafkaStream.state() != KafkaStreams.State.RUNNING) {
+            log.info("State store is NOT running");
+            return ResponseEntity.notFound().build();
+        }
+
+        KeyQueryMetadata keyQueryMetadata = kafkaStream.queryMetadataForKey(BillOfLadingStream.BILLS_OF_LADING_STORE, id, Serdes.String().serializer());
         if (keyQueryMetadata == null) {
             log.info("Bill of Lading with id [{}] does not exist", id);
             return ResponseEntity.notFound().build();
@@ -82,14 +74,11 @@ public class ApiController {
         HostInfo activeHost = keyQueryMetadata.activeHost();
         if (hostInfo.equals(activeHost)) {
             log.info("Bill of Lading with id [{}] is here!!", id);
-            return ResponseEntity.ok(getBillOfLadingStore().get(id));
+            return ResponseEntity.of(Optional.ofNullable(getBillOfLadingStore().get(id)));
         }
         log.info("Bill of Lading with id [{}] might exist on host {}", id, activeHost);
 
-        String url = String.format("http://%s:%s/api/bills-of-lading/%s", activeHost.host(), activeHost.port(), id);
-        log.info("Retrieving Bill of Lading with id [{}] from {}", id, url);
-        BillOfLadingProjection billOfLading = restTemplate.getForObject(url,
-            BillOfLadingProjection.class);
+        BillOfLadingProjection billOfLading = getBillOfLading(id, activeHost);
         if (billOfLading == null) {
             return ResponseEntity.notFound().build();
         }
@@ -103,8 +92,7 @@ public class ApiController {
             log.info("State store is REBALANCING");
             return ResponseEntity.notFound().build();
         }
-        KeyQueryMetadata keyQueryMetadata = kafkaStream
-            .queryMetadataForKey(VesselVisitStream.VESSEL_VISITS_STORE, id, Serdes.String().serializer());
+        KeyQueryMetadata keyQueryMetadata = kafkaStream.queryMetadataForKey(VesselVisitStream.VESSEL_VISITS_STORE, id, Serdes.String().serializer());
         if (keyQueryMetadata == null) {
             log.info("VesselVisit with id [{}] does not exist", id);
             return ResponseEntity.notFound().build();
@@ -113,18 +101,15 @@ public class ApiController {
         HostInfo activeHost = keyQueryMetadata.activeHost();
         if (hostInfo.equals(activeHost)) {
             log.info("VesselVisit with id [{}] is here!!", id);
-            return ResponseEntity.ok(getVesselVisitStore().get(id));
+            final VesselVisit vesselVisit = getVesselVisitStore().get(id);
+            return ResponseEntity.of(Optional.ofNullable(vesselVisit));
         }
         log.info("VesselVisit with id [{}] might exist on host {}", id, activeHost);
 
         String url = String.format("http://%s:%s/api/vesselvisits/%s", activeHost.host(), activeHost.port(), id);
         log.info("Retrieving vesselvisit with id [{}] from {}", id, url);
-        VesselVisit vesselVisit = restTemplate.getForObject(url,
-            VesselVisit.class);
-        if (vesselVisit == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(vesselVisit);
+        ResponseEntity<VesselVisit> response = restTemplate.getForEntity(url, VesselVisit.class);
+        return ResponseEntity.of(Optional.ofNullable(response.getBody()));
     }
 
     @PutMapping(path = "/vesselvisits")
@@ -164,5 +149,20 @@ public class ApiController {
                 );
         }
         return billOfLadingStore;
+    }
+
+    public BillOfLadingProjection getBillOfLading(String bltId, HostInfo activeHost) {
+        try {
+            String url = String.format("http://%s:%s/api/bills-of-lading/%s", activeHost.host(), activeHost.port(), bltId);
+            ResponseEntity<BillOfLadingProjection> response = restTemplate.getForEntity(
+                url,
+                BillOfLadingProjection.class);
+            if (response.getStatusCode().isError() || !response.hasBody()) {
+                return null;
+            }
+            return response.getBody();
+        } catch (RestClientException e) {
+            return null;
+        }
     }
 }
